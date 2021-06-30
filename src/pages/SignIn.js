@@ -2,11 +2,14 @@ import React from 'react';
 import { Form, Input, InputNumber, Button, Typography, Divider } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
+import { useHideMenu } from '../hooks/useHideMenu';
 
 const { Title, Text } = Typography;
 
 export const SignIn = () => {
     const history = useHistory();
+    useHideMenu(false);
+
     const onFinish = (values) => {
         console.log('Success:', values);
         history.push('/desk');
