@@ -3,7 +3,6 @@
 ## Technologies
 
 -   React.js
--   Bootstrap
 -   Socket.io
 -   Ant Design
 
