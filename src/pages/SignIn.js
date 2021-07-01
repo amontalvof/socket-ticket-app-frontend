@@ -1,23 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, InputNumber, Button, Typography, Divider } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 import { useHideMenu } from '../hooks/useHideMenu';
+import getStoredUser from '../helpers/getStoredUser';
 
 const { Title, Text } = Typography;
 
 export const SignIn = () => {
+    const [user] = useState(getStoredUser());
     const history = useHistory();
     useHideMenu(false);
 
-    const onFinish = (values) => {
-        console.log('Success:', values);
+    const onFinish = ({ agent, desk }) => {
+        localStorage.setItem('agent', agent);
+        localStorage.setItem('desk', desk);
         history.push('/desk');
     };
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+
+    if (user.agent && user.desk) {
+        return <Redirect to="/desk" />;
+    }
+
     return (
         <>
             <Title level={2}>Sign In</Title>

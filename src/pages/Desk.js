@@ -1,28 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
 import { Row, Col, Typography, Button, Divider } from 'antd';
 import { CloseCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useHideMenu } from '../hooks/useHideMenu';
+import getStoredUser from '../helpers/getStoredUser';
 
 const { Title, Text } = Typography;
 
 export const Desk = () => {
+    const [user] = useState(getStoredUser());
+    const history = useHistory();
     useHideMenu(false);
 
-    const logout = (params) => {
-        console.log('logout');
+    const logout = () => {
+        localStorage.clear();
+        history.replace('/signin');
     };
 
     const nextTicket = (params) => {
         console.log('nextTicket');
     };
 
+    if (!user.agent || !user.desk) {
+        return <Redirect to="/signin" />;
+    }
+
     return (
         <>
             <Row>
                 <Col span={20}>
-                    <Title level={2}>Andy</Title>
+                    <Title level={2}>{user.agent}</Title>
                     <Text>You are working at the desk: </Text>
-                    <Text type="success">5</Text>
+                    <Text type="success">{user.desk}</Text>
                 </Col>
                 <Col span={4} align="right">
                     <Button shape="round" type="danger" onClick={logout}>
