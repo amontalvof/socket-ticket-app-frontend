@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
 import { Row, Col, Typography, Button, Divider } from 'antd';
 import { CloseCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { SocketContext } from '../context/SocketContext';
 import { useHideMenu } from '../hooks/useHideMenu';
 import getStoredUser from '../helpers/getStoredUser';
 
@@ -11,14 +12,18 @@ export const Desk = () => {
     const [user] = useState(getStoredUser());
     const history = useHistory();
     useHideMenu(false);
+    const { socket } = useContext(SocketContext);
+    const [workingTicket, setWorkingTicket] = useState(null);
 
     const logout = () => {
         localStorage.clear();
         history.replace('/signin');
     };
 
-    const nextTicket = (params) => {
-        console.log('nextTicket');
+    const nextTicket = () => {
+        socket.emit('work-next-ticket', user, (ticket) => {
+            setWorkingTicket(ticket);
+        });
     };
 
     if (!user.agent || !user.desk) {
@@ -41,16 +46,18 @@ export const Desk = () => {
                 </Col>
             </Row>
             <Divider />
-            <Row>
-                <Col>
-                    <Text>
-                        You are attending the customer with ticket number:{' '}
-                    </Text>
-                    <Text style={{ fontSize: 30 }} type="danger">
-                        55
-                    </Text>
-                </Col>
-            </Row>
+            {workingTicket && (
+                <Row>
+                    <Col>
+                        <Text>
+                            You are attending the customer with ticket number:{' '}
+                        </Text>
+                        <Text style={{ fontSize: 30 }} type="danger">
+                            {workingTicket.number}
+                        </Text>
+                    </Col>
+                </Row>
+            )}
             <Row>
                 <Col offset={18} span={6} align="right">
                     <Button onClick={nextTicket} shape="round" type="primary">

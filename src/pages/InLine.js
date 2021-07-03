@@ -1,56 +1,31 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Row, Col, Typography, List, Card, Tag, Divider } from 'antd';
 import { useHideMenu } from '../hooks/useHideMenu';
+import { SocketContext } from '../context/SocketContext';
 
 const { Title, Text } = Typography;
 
-const data = [
-    {
-        ticketNo: 33,
-        desk: 3,
-        agent: 'Fernando Herrera',
-    },
-    {
-        ticketNo: 34,
-        desk: 4,
-        agent: 'Melissa Flores',
-    },
-    {
-        ticketNo: 35,
-        desk: 5,
-        agent: 'Carlos Castro',
-    },
-    {
-        ticketNo: 36,
-        desk: 3,
-        agent: 'Fernando Herrera',
-    },
-    {
-        ticketNo: 37,
-        desk: 3,
-        agent: 'Fernando Herrera',
-    },
-    {
-        ticketNo: 38,
-        desk: 2,
-        agent: 'Melissa Flores',
-    },
-    {
-        ticketNo: 39,
-        desk: 5,
-        agent: 'Carlos Castro',
-    },
-];
-
 export const InLine = () => {
     useHideMenu(true);
+    const { socket } = useContext(SocketContext);
+    const [tickets, setTickets] = useState([]);
+
+    useEffect(() => {
+        socket.on('assigned-ticket', (assigned) => {
+            setTickets(assigned);
+        });
+        return () => {
+            socket.off('assigned-ticket');
+        };
+    }, [socket]);
+
     return (
         <>
             <Title level={1}>Serving client</Title>
             <Row>
                 <Col span={12}>
                     <List
-                        dataSource={data.slice(0, 3)}
+                        dataSource={tickets.slice(0, 3)}
                         renderItem={(item) => (
                             <List.Item>
                                 <Card
@@ -62,7 +37,7 @@ export const InLine = () => {
                                         </Tag>,
                                     ]}
                                 >
-                                    <Title>No. {item.ticketNo}</Title>
+                                    <Title>No. {item.number}</Title>
                                 </Card>
                             </List.Item>
                         )}
@@ -71,11 +46,11 @@ export const InLine = () => {
                 <Col span={12}>
                     <Divider>History</Divider>
                     <List
-                        dataSource={data.slice(3)}
+                        dataSource={tickets.slice(3)}
                         renderItem={(item) => (
                             <List.Item>
                                 <List.Item.Meta
-                                    title={`Ticket No. ${item.ticketNo}`}
+                                    title={`Ticket No. ${item.number}`}
                                     description={
                                         <>
                                             <Text tyle="secondary">
