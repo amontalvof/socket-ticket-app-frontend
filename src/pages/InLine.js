@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Row, Col, Typography, List, Card, Tag, Divider } from 'antd';
 import { useHideMenu } from '../hooks/useHideMenu';
 import { SocketContext } from '../context/SocketContext';
+import getLastTickets from '../helpers/getLastTickets';
 
 const { Title, Text } = Typography;
 
@@ -18,6 +19,10 @@ export const InLine = () => {
             socket.off('assigned-ticket');
         };
     }, [socket]);
+
+    useEffect(() => {
+        getLastTickets().then(setTickets);
+    }, []);
 
     return (
         <>
